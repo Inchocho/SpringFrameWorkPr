@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="helloDao" class="kr.co.ezen.HelloDao"/>
+	<bean id="car" class="kr.co.ezen.Car"/>
+	
+	<bean id="scoreDto" class="kr.co.ezen.ScoreDto">
+		<constructor-arg>
+			<value type="java.lang.String">이순신</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>100</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>100</value>
+		</constructor-arg>
+	</bean>
+	
+	<!-- set메소드 사용을 위한 property -->
+	<!-- EL태그와 비슷함 ${eng} -->
+	<bean id="scoreDto2" class="kr.co.ezen.ScoreDto">
+		<property name="eng">
+			<value>1000</value>
+		</property>
+	</bean>	
+	
+	<bean id="score" class="kr.co.di.Score">
+		<constructor-arg>
+			<value>100</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>100</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="score2" class="kr.co.di.Score">
+		<constructor-arg>
+			<value>100</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>100</value>
+		</constructor-arg>
+	</bean>	
+
+</beans>

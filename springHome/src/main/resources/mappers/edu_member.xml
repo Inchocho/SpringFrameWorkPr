@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.members">
+
+	<resultMap type="memberDto" id="memberResultMap">
+		<id column="MNO" property="no"/>
+		<result column="MNAME" property="name"/>
+		<result column="EMAIL" property="email"/>
+		<result column="PWD" property="password"/>
+		<result column="CRE_DATE" property="createDate"
+			javaType="java.util.Date"/>
+		<result column="MOD_DATE" property="modifyDate"
+			javaType="java.util.Date"/>		
+	</resultMap>
+	
+	<select id="memberSelectList" resultMap="memberResultMap">
+		SELECT ROWNUM AS MNO, MNAME, EMAIL, CRE_DATE, MOD_DATE
+		FROM MEMBER
+		WHERE ROWNUM &lt; 6
+		ORDER BY MNO ASC
+	</select>
+
+</mapper>
