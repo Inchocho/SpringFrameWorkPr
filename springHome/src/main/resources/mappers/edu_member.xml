@@ -26,5 +26,18 @@
 		FROM MEMBER
 		WHERE EMAIL = #{email} AND PWD = #{pwd}
 	</select>	
+	
+	<insert id="memberInsertOne" parameterType="memberDto">
+		INSERT INTO MEMBER
+		VALUE(MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE)
+		VALUES(MEMBER_MNO_SEQ.NEXTVAL, #{email}, #{password}, #{name}, SYSDATE, SYSDATE)
+	</insert>
+	
+	<select id="memberSelectOne" parameterType="int"
+		resultMap="memberResultMap">
+		SELECT MNO, MNAME, EMAIL, CRE_DATE
+		FROM MEMBER
+		WHERE MNO = #{no}
+	</select>		
 
 </mapper>

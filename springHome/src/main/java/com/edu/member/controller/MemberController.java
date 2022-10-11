@@ -64,4 +64,33 @@ public class MemberController {
 		return "member/MemberListView";
 	}
 	
+	//멤버추가(멤버폼 화면)
+	@RequestMapping(value="/member/add.do", method = RequestMethod.GET)
+	public String add(Model model) {
+		logger.debug("Welcome MemberController memberAdd!");
+		
+		return "member/MemberForm";
+	}	
+	
+	//멤버추가 (실제로 멤버추가되는 로직) ~~Ctr -> 작업
+	@RequestMapping(value="/member/addCtr.do", method = RequestMethod.POST)
+	public String memberAdd(MemberDto memberDto, Model model) {	
+		logger.info("Welcome MemberController addCtr! " + memberDto);
+		
+		memberService.memberInsertOne(memberDto);
+		
+		return "redirect:/member/list.do";
+	}			
+	
+	@RequestMapping(value="/member/update.do", method = RequestMethod.GET)
+	public String memberUpdate(int no, Model model) {
+		logger.debug("Welcome MemberController memberUpdate!" + no);
+		
+		MemberDto memberDto = memberService.memberSelectOne(no);
+		
+		model.addAttribute("memberDto", memberDto);
+		
+		return "member/MemberUpdateForm";
+	}		
+	
 }

@@ -27,4 +27,16 @@ public class MemberServiceImpl implements MemberService{
 		return memberDao.memberExist(email, password);
 	}
 
+	@Override
+	public int memberInsertOne(MemberDto memberDto) {
+		// TODO Auto-generated method stub
+		return memberDao.memberInsertOne(memberDto);
+	}
+
+	@Override
+	public MemberDto memberSelectOne(int no) {
+		// TODO Auto-generated method stub
+		return memberDao.memberSelectOne(no);
+	}
+
 }

@@ -10,4 +10,8 @@ public interface MemberDao {
 
 	public MemberDto memberExist(String email, String password);
 	
+	public int memberInsertOne(MemberDto memberDto);
+
+	public MemberDto memberSelectOne(int no);
+	
 }

@@ -24,12 +24,24 @@ public class MemberDaoImpl implements MemberDao{
 	@Override
 	public MemberDto memberExist(String email, String password) {
 		
-		//이메일과 패스워드 값을 넘기기 위해서(?)
+		//이메일과 패스워드 값을 넘기기 위해서(값을 2개이상 전달시 HashMap 사용)
 		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("email", email);
 		paramMap.put("pwd", password);
  
 		return sqlSession.selectOne("com.edu.member.memberExist", paramMap);
+	}
+
+	@Override
+	public int memberInsertOne(MemberDto memberDto) {
+		// TODO Auto-generated method stub
+		return sqlSession.insert("com.edu.member.memberInsertOne", memberDto);
+	}
+
+	@Override
+	public MemberDto memberSelectOne(int no) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("com.edu.member.memberSelectOne", no);
 	}
 
 	
