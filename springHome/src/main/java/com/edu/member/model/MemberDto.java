@@ -2,11 +2,8 @@ package com.edu.member.model;
 
 import java.util.Date;
 
-//MVC패턴중 MODEL(9.16)
 public class MemberDto {
 
-	//변수 생성(DB와 연동할 변수, 즉 테이블의 속성 만큼 생성)
-	//테이블 속성과 순서를 반드시 맞춰서 작성하자 
 	private int no = 0;
 	private String name = "";
 	private String email = "";
@@ -18,7 +15,8 @@ public class MemberDto {
 		super();
 	}
 
-	public MemberDto(int no, String name, String email, String password, Date createDate, Date modifyDate) {
+	public MemberDto(int no, String name, String email
+			, String password, Date createDate, Date modifyDate) {
 		super();
 		this.no = no;
 		this.name = name;
@@ -78,8 +76,12 @@ public class MemberDto {
 
 	@Override
 	public String toString() {
-		return "MemberDto [no=" + no + ", name=" + name + ", email=" + email + ", password=" + password
-				+ ", createDate=" + createDate + ", modifyDate=" + modifyDate + "]";
+		return "MemberDto [no=" + no + ", name=" + name + ", email=" 
+				+ email + ", password=" + password
+				+ ", createDate=" + createDate + ", modifyDate=" 
+				+ modifyDate + "]";
 	}
+	
+	
 	
 }

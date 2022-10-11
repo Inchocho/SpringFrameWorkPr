@@ -4,16 +4,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>나는 스프링 레거시로 만들면 나오는 홈이야</title>
+<title>Home</title>
 </head>
 <body>
-	
-	
+
 	<h1>Hello Spring</h1>
-	
+
 	<p>
-		The time on the server is ${serverTime}
+		The time on the server is ${serverTime}.
 	</p>
-	
+
 </body>
 </html>

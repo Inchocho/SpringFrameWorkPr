@@ -9,7 +9,7 @@ import com.edu.member.dao.MemberDao;
 import com.edu.member.model.MemberDto;
 
 @Service
-public class MemberServiceImpl implements MemberService {
+public class MemberServiceImpl implements MemberService{
 
 	@Autowired
 	public MemberDao memberDao;
@@ -19,6 +19,12 @@ public class MemberServiceImpl implements MemberService {
 		// TODO Auto-generated method stub
 		
 		return memberDao.memberSelectList();
+	}
+
+	@Override
+	public MemberDto memberExist(String email, String password) {
+		// TODO Auto-generated method stub
+		return memberDao.memberExist(email, password);
 	}
 
 }

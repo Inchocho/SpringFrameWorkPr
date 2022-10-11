@@ -7,4 +7,7 @@ import com.edu.member.model.MemberDto;
 public interface MemberDao {
 
 	public List<MemberDto> memberSelectList();
+
+	public MemberDto memberExist(String email, String password);
+	
 }
