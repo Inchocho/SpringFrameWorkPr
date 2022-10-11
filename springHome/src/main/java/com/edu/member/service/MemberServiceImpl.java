@@ -46,9 +46,9 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public int memberDeleteOne(int no) {
+	public void memberDeleteOne(int no) {
 		// TODO Auto-generated method stub
-		return memberDao.memberDeleteOne(no);
+		memberDao.memberDeleteOne(no);
 	}
 
 }

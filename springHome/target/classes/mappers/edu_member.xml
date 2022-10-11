@@ -46,6 +46,9 @@
 			WHERE MNO = #{no}
 	</update>
 	
+	<!-- parameterType 즉 넘겨받는 파라미터의 타입이 중요한것 -->
+	<!-- 그러므로 #{value}, #{any} 받는 갯수만큼만 있으면 된다 -->
+	<!-- 그러나 가독성이 중요하므로 전달받은 파라미터 변수명을 그대로쓰자 -->
 	<delete id="memberDeleteOne" parameterType="int">
 			DELETE FROM MEMBER
 			WHERE MNO = #{no}

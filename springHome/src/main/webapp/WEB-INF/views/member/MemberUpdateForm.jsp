@@ -8,7 +8,6 @@
 
 <script type="text/javascript">
 	function pageMoveListFnc() {
-		var memberNameObj = document.getElementById('memberName');		
 		location.href = './list.do';
 	}
 	
@@ -33,7 +32,7 @@
 		이메일: <input type='text' name='email' 
 			value='${memberDto.email}'><br>
 		가입일: <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" 
-				 value="${memberDto.createDate}"/>							
+				 value="${memberDto.createDate}"/><br>						
 		<input type='submit' value='저장'>
 		<input type='button' value='삭제' 
 			onclick='pageMoveDeleteFnc(${memberDto.no});'>

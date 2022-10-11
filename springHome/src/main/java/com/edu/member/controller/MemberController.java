@@ -96,7 +96,7 @@ public class MemberController {
 	
 	@RequestMapping(value="/member/updateCtr.do", method = RequestMethod.POST)
 	public String memberUpdate(MemberDto memberDto, Model model) {
-		logger.info("Welcome MemberController updateCtr! " + memberDto);
+		logger.info("Welcome MemberController memberUpdate! " + memberDto);
 		
 		memberService.memberUpdateOne(memberDto);
 		
@@ -105,7 +105,7 @@ public class MemberController {
 	
 	@RequestMapping(value="/member/deleteCtr.do", method = RequestMethod.GET)
 	public String memberDelete(int no, Model model) {
-		logger.info("Welcome MemberController deleteCtr! " + no);
+		logger.info("Welcome MemberController memberDeleteCtr! " + no);
 		
 		memberService.memberDeleteOne(no);
 		

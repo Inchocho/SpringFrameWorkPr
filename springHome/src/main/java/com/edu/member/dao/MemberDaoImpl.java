@@ -15,6 +15,9 @@ public class MemberDaoImpl implements MemberDao{
 	@Autowired
 	SqlSessionTemplate sqlSession;
 	
+	//mapper의 namespace를 변수로 생성해서 사용하자
+	String namespace = "com.edu.member.";
+	
 	@Override
 	public List<MemberDto> memberSelectList() {
 		
@@ -47,13 +50,13 @@ public class MemberDaoImpl implements MemberDao{
 	@Override
 	public int memberUpdateOne(MemberDto memberDto) {
 		// TODO Auto-generated method stub
-		return sqlSession.update("com.edu.member.memberUpdateOne", memberDto);
+		return sqlSession.update(namespace + "memberUpdateOne", memberDto);
 	}
 
 	@Override
-	public int memberDeleteOne(int no) {
+	public void memberDeleteOne(int no) {
 		// TODO Auto-generated method stub
-		return sqlSession.delete("com.edu.member.memberDeleteOne", no);
+		sqlSession.delete(namespace + "memberDeleteOne", no);
 	}
 
 	
