@@ -39,5 +39,16 @@
 		FROM MEMBER
 		WHERE MNO = #{no}
 	</select>		
+	
+	<update id="memberUpdateOne" parameterType="memberDto">
+			UPDATE MEMBER
+			SET EMAIL = #{email}, MNAME = #{name}, MOD_DATE = SYSDATE
+			WHERE MNO = #{no}
+	</update>
+	
+	<delete id="memberDeleteOne" parameterType="int">
+			DELETE FROM MEMBER
+			WHERE MNO = #{no}
+	</delete>
 
 </mapper>

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix='fmt'%>	
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,12 +8,12 @@
 
 <script type="text/javascript">
 	function pageMoveListFnc() {
-		var memberNameObj = document.getElementById('memberName');
-		location.href = './list';
+		var memberNameObj = document.getElementById('memberName');		
+		location.href = './list.do';
 	}
 	
 	function pageMoveDeleteFnc(no){
-		var url = "./delete?no=" + no;
+		var url = "./deleteCtr.do?no=" + no;
 		location.href = url;
 	}
 </script>
@@ -24,18 +25,19 @@
 	<jsp:include page="../Header.jsp" />
 	
 	<h1>회원정보</h1>
-	<form action='./update' method='post'>
+	<form action='./updateCtr.do' method='post'>
 		번호: <input type='text' name='no' 
 			value='${memberDto.no}' readonly><br>
 		이름: <input type='text' name='name' id='memberName'
 			value='${memberDto.name}'><br>
 		이메일: <input type='text' name='email' 
 			value='${memberDto.email}'><br>
-		가입일: ${requestScope.memberDto.createDate}<br>
+		가입일: <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" 
+				 value="${memberDto.createDate}"/>							
 		<input type='submit' value='저장'>
 		<input type='button' value='삭제' 
 			onclick='pageMoveDeleteFnc(${memberDto.no});'>
-		<input type='button' value='취소' onClick='pageMoveListFnc();'>	
+		<input type='button' value='뒤로가기' onClick='pageMoveListFnc();'>	
 	</form>
 	
 	<jsp:include page="../Tail.jsp" />

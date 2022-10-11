@@ -25,9 +25,9 @@
 		${memberDto.no},
 		<a href='./update.do?no=${memberDto.no}'>${memberDto.name}</a>,
 		${memberDto.email},
-		<fmt:formatDate pattern="yyyy-MM-dd hh:mm"
+		<fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" 
 			 value="${memberDto.createDate}"/>		
-		<a href='./delete.do?no=${memberDto.no}'>[삭제]</a><br>
+		<a href='./deleteCtr.do?no=${memberDto.no}'>[삭제]</a><br>
 	
 	</c:forEach>
 

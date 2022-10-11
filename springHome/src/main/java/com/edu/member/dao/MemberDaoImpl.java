@@ -44,5 +44,17 @@ public class MemberDaoImpl implements MemberDao{
 		return sqlSession.selectOne("com.edu.member.memberSelectOne", no);
 	}
 
+	@Override
+	public int memberUpdateOne(MemberDto memberDto) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("com.edu.member.memberUpdateOne", memberDto);
+	}
+
+	@Override
+	public int memberDeleteOne(int no) {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("com.edu.member.memberDeleteOne", no);
+	}
+
 	
 }

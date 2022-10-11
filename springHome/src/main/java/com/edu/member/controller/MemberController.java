@@ -82,8 +82,9 @@ public class MemberController {
 		return "redirect:/member/list.do";
 	}			
 	
+	//상세보기 (업데이트폼으로 값을 들고 페이지를 보여줌)
 	@RequestMapping(value="/member/update.do", method = RequestMethod.GET)
-	public String memberUpdate(int no, Model model) {
+	public String update(int no, Model model) {
 		logger.debug("Welcome MemberController memberUpdate!" + no);
 		
 		MemberDto memberDto = memberService.memberSelectOne(no);
@@ -93,4 +94,21 @@ public class MemberController {
 		return "member/MemberUpdateForm";
 	}		
 	
+	@RequestMapping(value="/member/updateCtr.do", method = RequestMethod.POST)
+	public String memberUpdate(MemberDto memberDto, Model model) {
+		logger.info("Welcome MemberController updateCtr! " + memberDto);
+		
+		memberService.memberUpdateOne(memberDto);
+		
+		return "redirect:/member/list.do";
+	}
+	
+	@RequestMapping(value="/member/deleteCtr.do", method = RequestMethod.GET)
+	public String memberDelete(int no, Model model) {
+		logger.info("Welcome MemberController deleteCtr! " + no);
+		
+		memberService.memberDeleteOne(no);
+		
+		return "redirect:/member/list.do";
+	}
 }
