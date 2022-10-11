@@ -15,7 +15,6 @@
 	<form action="./loginCtr.do" method="post">
 		이메일:	<input type="text" name="email"><br>
 		암호:	<input type="password" name="password"><br>
-		이름:	<input type="text" name="name"><br>
 				<input type="submit" value="로그인"><br>
 		
 	</form>

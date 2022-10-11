@@ -8,6 +8,6 @@ public interface MemberDao {
 
 	public List<MemberDto> memberSelectList();
 
-	public MemberDto memberExist(String email, String password, String name);
+	public MemberDto memberExist(String email, String password);
 	
 }
