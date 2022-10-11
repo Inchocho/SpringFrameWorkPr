@@ -22,12 +22,13 @@ public class MemberDaoImpl implements MemberDao{
 	}
 
 	@Override
-	public MemberDto memberExist(String email, String password) {
+	public MemberDto memberExist(String email, String password, String name) {
 		
 		//이메일과 패스워드 값을 넘기기 위해서(?)
 		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("email", email);
 		paramMap.put("pwd", password);
+		paramMap.put("name", name);
  
 		return sqlSession.selectOne("com.edu.member.memberExist", paramMap);
 	}

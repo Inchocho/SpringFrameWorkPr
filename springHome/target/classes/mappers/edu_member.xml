@@ -24,7 +24,7 @@
 		resultMap="memberResultMap">
 		SELECT MNAME, EMAIL
 		FROM MEMBER
-		WHERE EMAIL = #{email} AND PWD = #{pwd}
+		WHERE EMAIL = #{email} AND PWD = #{pwd} AND MNAME = #{name}
 	</select>	
 
 </mapper>

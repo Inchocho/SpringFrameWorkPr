@@ -37,12 +37,12 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value="/auth/loginCtr.do", method = RequestMethod.POST)
-	public String loginCtr(String email, String password
+	public String loginCtr(String email, String password, String name
 			, HttpSession session, Model model) {	
 		logger.info("Welcome MemberController loginCtr! " + email + 
-				", " + password);
+				", " + password + ", " + name);
 		
-		MemberDto memberDto = memberService.memberExist(email, password);
+		MemberDto memberDto = memberService.memberExist(email, password, name);
 		
 		if(memberDto != null) {
 			session.setAttribute("member", memberDto);

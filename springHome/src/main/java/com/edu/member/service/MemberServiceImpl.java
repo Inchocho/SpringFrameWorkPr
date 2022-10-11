@@ -22,9 +22,9 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public MemberDto memberExist(String email, String password) {
+	public MemberDto memberExist(String email, String password, String name) {
 		// TODO Auto-generated method stub
-		return memberDao.memberExist(email, password);
+		return memberDao.memberExist(email, password, name);
 	}
 
 }
