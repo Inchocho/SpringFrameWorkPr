@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.member">
+
+	<resultMap type="memberDto" id="memberResultMap">
+		<id column="MNO" property="no"/>
+		<result column="MNAME" property="name"/>
+		<result column="EMAIL" property="email"/>
+		<result column="PWD" property="password"/>
+		<result column="CRE_DATE" property="createDate"
+			javaType="java.util.Date"/>
+		<result column="MOD_DATE" property="modifyDate"
+			javaType="java.util.Date"/>
+	</resultMap>
+
+<!-- 	<select id="memberSelectList" resultMap="memberResultMap"> -->
+<!-- 		SELECT MNO, MNAME, EMAIL, CRE_DATE  -->
+<!-- 		FROM MEMBER  -->
+<!-- 		ORDER BY MNO DESC -->
+<!-- 	</select> -->
+	
+	<!-- 페이징처리를 추가한 목록 조회 (ORDER BY MNO ASC 번호 오름차순) -->
+	<select id="memberSelectList" resultMap="memberResultMap">
+		SELECT MEMBER.RNUM, MNO, EMAIL, MNAME
+		FROM (
+				SELECT ROWNUM RNUM, M.MNO, M.EMAIL, M.MNAME
+				FROM (
+				  		SELECT MNO,EMAIL,MNAME
+						FROM MEMBER 
+						ORDER BY MNO ASC) M
+		) MEMBER 
+		WHERE MEMBER.RNUM BETWEEN #{start} AND #{end}
+	</select>
+
+	
+	<select id="memberExist" parameterType="map"
+		resultMap="memberResultMap">
+		SELECT MNAME, EMAIL
+		FROM MEMBER
+		WHERE EMAIL = #{email} AND PWD = #{pwd}
+	</select>	
+	
+	<insert id="memberInsertOne" parameterType="memberDto">
+		INSERT INTO MEMBER
+		VALUE(MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE)
+		VALUES(MEMBER_MNO_SEQ.NEXTVAL, #{email}, #{password}, #{name}, SYSDATE, SYSDATE)
+	</insert>
+	
+	<select id="memberSelectOne" parameterType="int"
+		resultMap="memberResultMap">
+		SELECT MNO, MNAME, EMAIL, CRE_DATE
+		FROM MEMBER
+		WHERE MNO = #{no}
+	</select>		
+	
+	<!-- 다이나믹쿼리를 통한 유효성검사(보통 화면에서 처리하는데 예시로 작업함) -->
+	<update id="memberUpdateOne" parameterType="memberDto">
+		UPDATE MEMBER
+		<set>
+			<if test="email != ''">EMAIL = #{email},</if>
+			<if test="name != ''">MNAME = #{name},</if>
+			MOD_DATE = SYSDATE
+		</set>
+		WHERE MNO = #{no}
+	</update>
+	
+	<!-- parameterType 즉 넘겨받는 파라미터의 타입이 중요한것 -->
+	<!-- 그러므로 #{value}, #{any} 받는 갯수만큼만 있으면 된다 -->
+	<!-- 그러나 가독성이 중요하므로 전달받은 파라미터 변수명을 그대로쓰자 -->
+	<delete id="memberDeleteOne" parameterType="int">
+			DELETE FROM MEMBER
+			WHERE MNO = #{no}
+	</delete>
+
+</mapper>
