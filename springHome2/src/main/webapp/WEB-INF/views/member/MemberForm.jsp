@@ -47,10 +47,12 @@
 	<jsp:include page="../Header.jsp"/>
 	<h1>회원등록</h1>
 			
-	<form action='./addCtr.do' method='post' id='submitForm'>
+	<form action='./addCtr.do' method='post' id='submitForm'
+		enctype="multipart/form-data">
 		이름: <input type='text' name='name' id='name'><br>
 		이메일: <input type='text' name='email' id='email'><br>
 		암호: <input type='password' name='password' id='password'><br>
+		파일: <input type="file" name='file'>
 		<input type='submit' value='추가' id='submitBtn'>
 		<input type='button' value='뒤로가기' onclick='pageMoveListFnc();'>
 	</form>	

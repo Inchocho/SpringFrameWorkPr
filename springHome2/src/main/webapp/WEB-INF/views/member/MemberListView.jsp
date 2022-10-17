@@ -18,38 +18,6 @@
 	table {
 		border-collapse: collapse;
 	}
-	
-
-	/* display나 position을 변경시 기존 태그(ul)의 기능을 상실한다 바꾸지 말자 - 연습용으로 바꿈*/
-	nav > ul{
-		list-style-type: none;
-		padding: 0px;
-		overflow: hidden;
-		background-color: #333333;
-/* 		width: 600px; */
-		display: table;
-		margin-left: auto;
-		margin-right: auto; 
-	}
-	
-	nav > ul > li{
-		float: left;
-	}
-	
-	nav > ul > li > a{
-		display: block;
-		color: white;
-		text-align: center;
-		padding: 16px;
-		text-decoration: none;
-	}
-	
-	/* 뭘 선택했는지 알 수 있게 하려고 a에 hover(마우스를 해당 태그에 올렸을때 효과) 효과와 색깔 변화, 글자 굵게 효과를 줌 */
-	nav > ul > li > a:hover {
-		color: #FFD9EC;
-		background-color: #5D5D5D;
-		font-weight: bold;	
-	}	
 </style>
 
 </head>
@@ -72,7 +40,7 @@
 		<tr>
 			<td>${memberDto.no}</td>
 			<td>
-				<a href='./update.do?no=${memberDto.no}'>${memberDto.name}</a>
+				<a href='./one.do?no=${memberDto.no}'>${memberDto.name}</a>
 			</td>
 			<td>${memberDto.email}</td>
 			<td>
@@ -86,17 +54,29 @@
 		</c:forEach>
 	</table>
 	
-	<nav>
-		<ul>
-			<li><a href="#"><span>&laquo;</span></a></li>
+	<!-- jsp:include는 forward처럼 데이터를 유지시킨다 -->
+	<jsp:include page="/WEB-INF/views/common/Paging.jsp"/>
+	
+	<form action="./list.do" id="pagingForm" method="post">
+		<input type="hidden" id="curPage" name="curPage"
+			value="${pagingMap.memberPaging.curPage}">			
+	</form>
+	
+	
+	<div hidden="">
+		커렌트 블럭: <input type="text" value="${pagingMap.memberPaging.curBlock}">
+		블럭 비긴 : <input type="text" value="${pagingMap.memberPaging.blockBegin}">
+		블럭 엔드 : <input type="text" value="${pagingMap.memberPaging.blockEnd}">
+		커렌트 페이지: <input type="text" value="${pagingMap.memberPaging.curPage}">
+		커렌트 블록: <input type="text" value="${pagingMap.memberPaging.curBlock}">
+		<br>
+		프리브 블록: <input type="text" value="${pagingMap.memberPaging.prevBlock}">
+		넥스트 블록: <input type="text" value="${pagingMap.memberPaging.nextBlock}">
+		토탈 페이지: <input type="text" value="${pagingMap.memberPaging.totPage}">
+		토탈 카운트: <input type="text" value="${pagingMap.totalCount}">
+	</div>
+	
 
-			<li><a href="#">1</a></li>
-			<li><a href="#">2</a></li>
-			<li><a href="#">3</a></li>
-
-			<li><a href="#"><span>&raquo;</span></a></li>
-		</ul>
-	</nav>
 		
 	<jsp:include page="/WEB-INF/views/Tail.jsp"/>
 	

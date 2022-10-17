@@ -22,13 +22,13 @@
 	
 	<!-- 페이징처리를 추가한 목록 조회 (ORDER BY MNO ASC 번호 오름차순) -->
 	<select id="memberSelectList" resultMap="memberResultMap">
-		SELECT MEMBER.RNUM, MNO, EMAIL, MNAME
+		SELECT MEMBER.RNUM, MNO, EMAIL, MNAME, CRE_DATE
 		FROM (
-				SELECT ROWNUM RNUM, M.MNO, M.EMAIL, M.MNAME
+				SELECT ROWNUM RNUM, M.MNO, M.EMAIL, M.MNAME, M.CRE_DATE
 				FROM (
-				  		SELECT MNO,EMAIL,MNAME
+				  		SELECT MNO, EMAIL, MNAME, CRE_DATE
 						FROM MEMBER 
-						ORDER BY MNO ASC) M
+						ORDER BY MNO DESC) M
 		) MEMBER 
 		WHERE MEMBER.RNUM BETWEEN #{start} AND #{end}
 	</select>
@@ -36,16 +36,27 @@
 	
 	<select id="memberExist" parameterType="map"
 		resultMap="memberResultMap">
-		SELECT MNAME, EMAIL
+		SELECT MNO, MNAME, EMAIL
 		FROM MEMBER
-		WHERE EMAIL = #{email} AND PWD = #{pwd}
+		WHERE EMAIL = #{email} AND PWD = #{pwd} 
 	</select>	
 	
+	<!-- 회원 추가 -->
 	<insert id="memberInsertOne" parameterType="memberDto">
 		INSERT INTO MEMBER
 		VALUE(MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE)
 		VALUES(MEMBER_MNO_SEQ.NEXTVAL, #{email}, #{password}, #{name}, SYSDATE, SYSDATE)
 	</insert>
+	
+	<!-- 파일 추가  insertFile 10.17 회원추가에 파일(사진) 추가기능 -->
+	<insert id="insertFile" parameterType="memberDto">
+		INSERT INTO TB_FILE
+		(IDX, PARENT_SEQ, ORIGINAL_FILE_NAME,
+		STORED_FILE_NAME, FILE_SIZE, CRE_DATE)
+		VALUES
+		(TB_FILE_IDX_SEQ.NEXTVAL, #{parentSeq}, #{original_file_name},
+		 #{stored_file_name}, #{file_size}, SYSDATE)
+	</insert>	
 	
 	<select id="memberSelectOne" parameterType="int"
 		resultMap="memberResultMap">
@@ -72,5 +83,12 @@
 			DELETE FROM MEMBER
 			WHERE MNO = #{no}
 	</delete>
+	
+	<!-- 회원의 전체수를 반환 (멤버 조회시 같이 총카운트수를 센다)-->
+	<select id="memberSelectTotalCount" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM MEMBER		
+	</select>	
+
 
 </mapper>

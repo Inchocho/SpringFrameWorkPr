@@ -1,7 +1,10 @@
 package com.edu.member.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -11,9 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.edu.member.model.MemberDto;
 import com.edu.member.service.MemberService;
+import com.edu.util.Paging;
 
 // 어노테이션 드리븐
 @Controller
@@ -45,13 +51,16 @@ public class MemberController {
 		
 		MemberDto memberDto = memberService.memberExist(email, password);
 		
+		String viewUrl = "";
 		if(memberDto != null) {
 			session.setAttribute("member", memberDto);
 			
-			return "redirect:/member/list.do";
+			viewUrl =  "redirect:/member/list.do";
+		}else {
+			viewUrl = "/auth/LoginFail";
 		}
 		
-		return "/auth/LoginFail";
+		return viewUrl;
 	}
 	
 	//로그아웃
@@ -65,16 +74,60 @@ public class MemberController {
 		return "redirect:/member/list.do";
 	}	
 	
-	@RequestMapping(value = "/member/list.do", method = RequestMethod.GET)
-	public String memberList(Model model) {
-		logger.info("Welcome MemberController memberList!");
+	//페이징 작업이 추가됨 (RequestMethod.GET, POST를 둘다 수행)
+	// 메소드를 method = {RequestMethod.GET, RequestMethod.POST} 블록{}처리를 통해 GET,POST방식 둘다 요청을 수행 할 수 있다
+	// 매개변수(parameter)에 @RequestParam를 선언, defaultValue를 선언하면 curPage를 호출하지 않아도 알아서 default값 1을 넣어준다
+	// 즉 로직상으로 회원목록에 들어오면 무조건 첫번째 페이지(curPage = 1)를 보여준다
+	@RequestMapping(value = "/member/list.do"
+			, method = {RequestMethod.GET, RequestMethod.POST})
+	public String memberList(@RequestParam(defaultValue = "1") int curPage, Model model) {
+
+		//logger에 {}안에 한개의 값(curPage의 값)이 들어간다  형식 : {} , 들어갈 변수 또는 값 (여기선 {}, curpage)
+		logger.info("Welcome MemberController memberList! curPage: {}"
+			, curPage);
 		
-		List<MemberDto> memberList = memberService.memberSelectList();
+		int totalCount = memberService.memberSelectTotalCount();
+		logger.info("totalCount: {}", totalCount);
 		
+		Paging memberPaging = new Paging(totalCount, curPage);
+		int start = memberPaging.getPageBegin();
+		int end = memberPaging.getPageEnd();
+		
+		List<MemberDto> memberList =
+				memberService.memberSelectList(start, end);
+		
+		//sql 페이징 쿼리실행결과 + 토탈카운트를 담아서 멤버리스트와 같이 모델에 담아준다
+		//map을 활용하면 다양한 데이터를 쉽게 객체를 만들 수 있다
+		//Map의 value타입이 Object인 이유 -> 스프링은 객체지향 프로그래밍 
+		Map<String, Object> pagingMap = 
+				new HashMap<String, Object>();
+		
+		//Map에다가 totalCount, memberPaging을 key로해서 담고
+		pagingMap.put("totalCount", totalCount);
+		pagingMap.put("memberPaging", memberPaging);
+		
+		logger.info("curPage: {}", curPage);
+		logger.info("curBlock: {}", memberPaging.getCurBlock());
+		
+		//Map을 pagingMap 키로 model에 담아서
+		//MemberListView에서 ${pagingMap.memberPaging.blockBegin} pagingMap의 인스턴스를 EL태그로 사용한다
 		model.addAttribute("memberList", memberList);
+		model.addAttribute("pagingMap", pagingMap);
 		
 		return "member/MemberListView";
 	}
+	
+	//상세보기 (선택시 상세정보를 보여줌 readOnly 페이지)
+	@RequestMapping(value="/member/one.do", method = RequestMethod.GET)
+	public String memberOne(int no, Model model) {
+		logger.debug("Welcome MemberController memberOne!{}" , no);
+		
+		MemberDto memberDto = memberService.memberSelectOne(no);
+		
+		model.addAttribute("memberDto", memberDto);
+		
+		return "member/MemberOneView";
+	}		
 	
 	//멤버추가(멤버폼 화면)
 	@RequestMapping(value="/member/add.do", method = RequestMethod.GET)
@@ -85,41 +138,83 @@ public class MemberController {
 	}	
 	
 	//멤버추가 (실제로 멤버추가되는 로직) ~~Ctr -> 작업
+	//10.17 - 파일업로드(이미지) 기능 추가 MultipartHttpServletRequest mulRequest 파라미터로 추가
 	@RequestMapping(value="/member/addCtr.do", method = RequestMethod.POST)
-	public String memberAdd(MemberDto memberDto, Model model) {	
-		logger.info("Welcome MemberController addCtr! " + memberDto);
+	public String memberAdd(MemberDto memberDto,
+			MultipartHttpServletRequest mulRequest, Model model) {	
+		logger.trace("Welcome MemberController memberAdd! 신규등록 처리!!! "
+			+ memberDto);
 		
-		memberService.memberInsertOne(memberDto);
+		//회원도 저장(회원추가)하고 파일도 저장(파일업로드)해야 한다
+		//파일은 반드시 예외처리를 작성한다
+		try {
+			memberService.memberInsertOne(memberDto, mulRequest);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("오랜만에 예외 처리 한다");
+			System.out.println("파일 문제 발생");
+			e.printStackTrace();
+		}
 		
 		return "redirect:/member/list.do";
-	}			
+	}
 	
-	//상세보기 (업데이트폼으로 값을 들고 페이지를 보여줌)
-	@RequestMapping(value="/member/update.do", method = RequestMethod.GET)
-	public String update(int no, Model model) {
-		logger.debug("Welcome MemberController memberUpdate!" + no);
+	
+	//회원수정 화면으로 (Go to MemberUpdateForm // {} 안에 no가 들어감)
+	//requestMethod명시 생략시 디폴트로 GET이 들어옴
+	@RequestMapping(value="/member/update.do")
+	public String memberUpdate(int no, Model model) {
+		logger.debug("Welcome memberUpdate enter {}", no);
 		
 		MemberDto memberDto = memberService.memberSelectOne(no);
 		
 		model.addAttribute("memberDto", memberDto);
 		
 		return "member/MemberUpdateForm";
-	}		
+	}	
 	
-	@RequestMapping(value="/member/updateCtr.do", method = RequestMethod.POST)
-	public String memberUpdate(MemberDto memberDto, Model model) {
-		logger.info("Welcome MemberController memberUpdate! " + memberDto);
-		
-		memberService.memberUpdateOne(memberDto);
-		
-		return "redirect:/member/list.do";
-	}
+	//수정시 바로바로 적용되게 바꾸기(세션?)
+	@RequestMapping(value = "/member/updateCtr.do", method = RequestMethod.POST)
+	   public String memberUpdateCtr(HttpSession session, MemberDto memberDto, Model model) {
+	                     // email.password 네임값을 가져옴(@RequestMapping의 힘)
+	      logger.info("Welcome MemberController memberUpdateCtr!" + memberDto);
+	         
+	      int resultNum = memberService.memberUpdateOne(memberDto);
+	         
+	      //resultNum이 0보다 크면(현재 수정에서는 정확히는 1) 수정쿼리가 수행된것
+	      if (resultNum > 0) {
+	         MemberDto sessionMemberDto =
+	               (MemberDto)session.getAttribute("member");
+	         
+	         if (sessionMemberDto != null) {
+	            if (sessionMemberDto.getNo() == memberDto.getNo()) {
+	               MemberDto newMemberDto = new MemberDto();
+	               
+	               newMemberDto.setNo(memberDto.getNo());
+	               newMemberDto.setEmail(memberDto.getEmail());
+	               newMemberDto.setName(memberDto.getName());
+	               
+	               session.removeAttribute("member");
+	               
+	               session.setAttribute("member", newMemberDto);
+	            }
+	         }
+	      }
+	      
+	      return "common/successPage";
+	   }
 	
+	//삭제(삭제시 세션없애는 처리?)
 	@RequestMapping(value="/member/deleteCtr.do", method = RequestMethod.GET)
-	public String memberDelete(int no, Model model) {
+	public String memberDelete(int no, HttpSession session, Model model) {
 		logger.info("Welcome MemberController memberDeleteCtr! " + no);
 		
 		memberService.memberDeleteOne(no);
+		MemberDto memberDto2 = (MemberDto) session.getAttribute("member");
+		
+		if(no == memberDto2.getNo()) {
+			session.invalidate();
+		}
 		
 		return "redirect:/member/list.do";
 	}

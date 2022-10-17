@@ -15,35 +15,7 @@
 		var url = "./deleteCtr.do?no=" + no;
 		location.href = url;
 	}
-	
-// 	window.onload = function(){
 
-// 		nameObj = document.getElementById('name');
-// 		emailObj = document.getElementById('email');
-// 		passwordObj = document.getElementById('password');
-// 		submitBtnObj = document.getElementById('submitBtn');
-// 		userAddFormObj = document.getElementById('userAddForm');
-		
-// 		submitBtnObj.addEventListener('click', function(e){
-// 			e.preventDefault();
-// 			if(nameObj.value == null || nameObj.value == ""){
-// 				alert('이름은 반드시 입력해야합니다');
-// 				nameObj.focus();
-// 				return;
-// 			}else if(emailObj.value == null || emailObj.value == ""){
-// 				alert('이메일은 반드시 입력해야합니다');
-// 				emailObj.focus();
-// 				return;
-// 			}else if(passwordObj.value == null || passwordObj.value == ""){
-// 				alert('비밀번호는 반드시 입력해야합니다');
-// 				passwordObj.focus();
-//  				return;
-// 			}else{
-// 				userAddFormObj.submit();
-// 			}
-// 		});
-		
-// 	}	
 </script>
 
 </head>

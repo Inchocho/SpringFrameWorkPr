@@ -2,10 +2,13 @@ package com.edu.member.dao;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.catalina.util.ParameterMap;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.edu.member.model.MemberDto;
 
@@ -19,9 +22,14 @@ public class MemberDaoImpl implements MemberDao{
 	String namespace = "com.edu.member.";
 	
 	@Override
-	public List<MemberDto> memberSelectList() {
+	public List<MemberDto> memberSelectList(int start, int end) {
 		
-		return sqlSession.selectList("com.edu.member.memberSelectList");
+		//시작페이지와 끝페이지를 HashMap에 담아서 넘겨줌
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("start", start);
+		map.put("end", end);
+		
+		return sqlSession.selectList(namespace + "memberSelectList", map);
 	}
 
 	@Override
@@ -36,7 +44,7 @@ public class MemberDaoImpl implements MemberDao{
 	}
 
 	@Override
-	public int memberInsertOne(MemberDto memberDto) {
+	public int memberInsertOne(MemberDto memberDto, MultipartHttpServletRequest mulRequest) {
 		// TODO Auto-generated method stub
 		return sqlSession.insert("com.edu.member.memberInsertOne", memberDto);
 	}
@@ -57,6 +65,20 @@ public class MemberDaoImpl implements MemberDao{
 	public void memberDeleteOne(int no) {
 		// TODO Auto-generated method stub
 		sqlSession.delete(namespace + "memberDeleteOne", no);
+	}
+
+	@Override
+	public int memberSelectTotalCount() {
+		// TODO Auto-generated method stub
+		return (int)sqlSession.selectOne(
+				namespace + "memberSelectTotalCount");
+	}
+
+	@Override
+	public void insertFile(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		sqlSession.insert(namespace + "insertFile", map);
 	}
 
 	
