@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -78,15 +77,27 @@ public class MemberController {
 	// 메소드를 method = {RequestMethod.GET, RequestMethod.POST} 블록{}처리를 통해 GET,POST방식 둘다 요청을 수행 할 수 있다
 	// 매개변수(parameter)에 @RequestParam를 선언, defaultValue를 선언하면 curPage를 호출하지 않아도 알아서 default값 1을 넣어준다
 	// 즉 로직상으로 회원목록에 들어오면 무조건 첫번째 페이지(curPage = 1)를 보여준다
+	
+	//10.21 @RequestParam(defaultValue = "") String keyword 추가 --> 쿼리 실행시 #{keyword} null에러를 막기위해 디폴트값을 줌
 	@RequestMapping(value = "/member/list.do"
 			, method = {RequestMethod.GET, RequestMethod.POST})
-	public String memberList(@RequestParam(defaultValue = "1") int curPage, Model model) {
+	public String memberList(@RequestParam(defaultValue = "1") int curPage
+				, @RequestParam(defaultValue = "all") String searchOption
+				, @RequestParam(defaultValue = "") String keyword
+				, Model model) {
 
 		//logger에 {}안에 한개의 값(curPage의 값)이 들어간다  형식 : {} , 들어갈 변수 또는 값 (여기선 {}, curpage)
-		logger.info("Welcome MemberController memberList! curPage: {}"
+		logger.info("Welcome MemberController memberList! curPage:{}" 
 			, curPage);
-		
-		int totalCount = memberService.memberSelectTotalCount();
+		logger.info("Welcome MemberController memberList! searchOption:{} :: keyword:{}" 
+				, searchOption, keyword);		
+
+		//DB에 맞게 잘 사용했으니 이젠 화면에 맞게 되돌림(10.21 6시)
+		if ("name".equals(searchOption)) {
+			searchOption = "mname";
+		};
+	
+		int totalCount = memberService.memberSelectTotalCount(searchOption, keyword);
 		logger.info("totalCount: {}", totalCount);
 		
 		Paging memberPaging = new Paging(totalCount, curPage);
@@ -94,7 +105,7 @@ public class MemberController {
 		int end = memberPaging.getPageEnd();
 		
 		List<MemberDto> memberList =
-				memberService.memberSelectList(start, end);
+				memberService.memberSelectList(searchOption, keyword, start, end);
 		
 		//sql 페이징 쿼리실행결과 + 토탈카운트를 담아서 멤버리스트와 같이 모델에 담아준다
 		//map을 활용하면 다양한 데이터를 쉽게 객체를 만들 수 있다
@@ -106,6 +117,12 @@ public class MemberController {
 		pagingMap.put("totalCount", totalCount);
 		pagingMap.put("memberPaging", memberPaging);
 		
+		Map<String, Object> searchMap = 
+				new HashMap<String, Object>();
+		
+		searchMap.put("searchOption", searchOption);
+		searchMap.put("keyword", keyword);
+		
 		logger.info("curPage: {}", curPage);
 		logger.info("curBlock: {}", memberPaging.getCurBlock());
 		
@@ -113,18 +130,35 @@ public class MemberController {
 		//MemberListView에서 ${pagingMap.memberPaging.blockBegin} pagingMap의 인스턴스를 EL태그로 사용한다
 		model.addAttribute("memberList", memberList);
 		model.addAttribute("pagingMap", pagingMap);
+		model.addAttribute("searchMap", searchMap);
 		
 		return "member/MemberListView";
 	}
 	
 	//상세보기 (선택시 상세정보를 보여줌 readOnly 페이지)
-	@RequestMapping(value="/member/one.do", method = RequestMethod.GET)
-	public String memberOne(int no, Model model) {
-		logger.debug("Welcome MemberController memberOne!{}" , no);
+	@RequestMapping(value="/member/one.do", method = {RequestMethod.GET, RequestMethod.POST})
+	public String memberOne(int no, Model model
+			, int curPage, String searchOption, String keyword) {
+		logger.debug("Welcome MemberController memberOne!"
+				+ " no:{} :: curPage:{}" , no, curPage);
+		logger.debug("Welcome MemberController memberOne!"
+				+ " searchOption:{} :: keyword:{}" , searchOption, keyword);
 		
-		MemberDto memberDto = memberService.memberSelectOne(no);
+		Map<String, Object> map = memberService.memberSelectOne(no);
 		
+		MemberDto memberDto = (MemberDto)map.get("memberDto");
+		List<Map<String, Object>> fileList = (List<Map<String, Object>>)map.get("fileList");
+		
+		Map<String, Object> memberMap = new HashMap<String, Object>();
+		memberMap.put("curPage", curPage);
+		memberMap.put("searchOption", searchOption);
+		memberMap.put("keyword", keyword);
+		
+		//2022.10.18일 시작 (model에 memberDto랑 fileList를 담음 - 첨부파일 확인작업중)
+		//2022.10.24일 상세 -> 목록으로 돌아갈시 페이지정보를 저장하기 위한 memberMap추가 및 모델에 추가
 		model.addAttribute("memberDto", memberDto);
+		model.addAttribute("fileList", fileList);
+		model.addAttribute("memberMap", memberMap);
 		
 		return "member/MemberOneView";
 	}		
@@ -162,26 +196,55 @@ public class MemberController {
 	
 	//회원수정 화면으로 (Go to MemberUpdateForm // {} 안에 no가 들어감)
 	//requestMethod명시 생략시 디폴트로 GET이 들어옴
+	//10.17 임시로 막아둠(파일 확인 기능 추가중) - 첨부파일 확인 끝나고 수정예정(우선 상세페이지 화면이 해결되야함 one.do)
 	@RequestMapping(value="/member/update.do")
-	public String memberUpdate(int no, Model model) {
-		logger.debug("Welcome memberUpdate enter {}", no);
+	public String memberUpdate(int no, Model model
+			, int curPage, String searchOption, String keyword) {
+		logger.debug("Welcome memberUpdate enter"
+				+ " no:{} :: curPage:{}", no, curPage);
+		logger.debug("Welcome memberUpdate enter"
+				+ " searchOption:{} :: keyword:{}", searchOption, curPage);		
 		
-		MemberDto memberDto = memberService.memberSelectOne(no);
+		Map<String, Object> map = memberService.memberSelectOne(no);
+		
+		MemberDto memberDto = (MemberDto)map.get("memberDto");
+		List<Map<String, Object>> fileList =
+					(List<Map<String, Object>>)map.get("fileList");
+		
+		Map<String, Object> memberMap = new HashMap<String, Object>();
+		memberMap.put("curPage", curPage);
+		memberMap.put("searchOption", searchOption);
+		memberMap.put("keyword", keyword);		
 		
 		model.addAttribute("memberDto", memberDto);
+		model.addAttribute("fileList", fileList);
+		model.addAttribute("memberMap", memberMap);
 		
 		return "member/MemberUpdateForm";
 	}	
 	
-	//수정시 바로바로 적용되게 바꾸기(세션?)
+	//수정시 바로바로 적용되게 바꾸기(세션?) fileIdx 없으면 디폴트값 -1 있으면 할당됨 (이제 updateCtr동안 fileIdx변수는 언제든 사용가능)
+	//디폴트값의 경우 절대 사용되지않을값으로 만드는게 일반적(음수로 내려갈일이 없으니까 -1준거)
+	//디폴트 -1을 준 이유는? 업로드한 파일삭제시 부모태그를 삭제해버리기 때문에 사라지는 fileIdx를 디폴트로 줘버림 (10.19 5시)
 	@RequestMapping(value = "/member/updateCtr.do", method = RequestMethod.POST)
-	   public String memberUpdateCtr(HttpSession session, MemberDto memberDto, Model model) {
+	   public String memberUpdateCtr(HttpSession session,
+			   MemberDto memberDto
+			   , @RequestParam(value = "fileIdx", defaultValue = "-1") int fileIdx
+			   , MultipartHttpServletRequest multipartHttpServletRequest
+			   , Model model) {
 	                     // email.password 네임값을 가져옴(@RequestMapping의 힘)
-	      logger.info("Welcome MemberController memberUpdateCtr!" + memberDto);
+	      logger.info("Welcome MemberController memberUpdateCtr! {} :: {}" , memberDto, fileIdx);
 	         
-	      int resultNum = memberService.memberUpdateOne(memberDto);
-	         
-	      //resultNum이 0보다 크면(현재 수정에서는 정확히는 1) 수정쿼리가 수행된것
+	      int resultNum = 0;
+	      
+	      try {
+	    	  resultNum = memberService.memberUpdateOne(memberDto
+		    		  , multipartHttpServletRequest, fileIdx);
+	      } catch (Exception e) {
+			e.printStackTrace();
+	      }
+	      
+	      //resultNum이 0보다 크면 수정쿼리가 수행된것 (회원정보 수정여부 판별 resultNum)
 	      if (resultNum > 0) {
 	         MemberDto sessionMemberDto =
 	               (MemberDto)session.getAttribute("member");
@@ -218,4 +281,5 @@ public class MemberController {
 		
 		return "redirect:/member/list.do";
 	}
+	
 }

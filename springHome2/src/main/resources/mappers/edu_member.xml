@@ -3,6 +3,20 @@
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.edu.member">
 
+	<sql id="search">
+		<choose>
+		<!-- 검색 옵션이 전체인 경우 -->
+			<when test="searchOption == 'all'">
+				WHERE MNAME LIKE '%'||#{keyword}||'%'
+				OR EMAIL LIKE '%'||#{keyword}||'%'
+			</when>
+		<!-- 검색 옵션이 전체가 아닌경우 -->
+			<otherwise>
+				WHERE ${searchOption} LIKE '%'||#{keyword}||'%'			
+			</otherwise>
+		</choose>
+	</sql>
+
 	<resultMap type="memberDto" id="memberResultMap">
 		<id column="MNO" property="no"/>
 		<result column="MNAME" property="name"/>
@@ -14,23 +28,18 @@
 			javaType="java.util.Date"/>
 	</resultMap>
 
-<!-- 	<select id="memberSelectList" resultMap="memberResultMap"> -->
-<!-- 		SELECT MNO, MNAME, EMAIL, CRE_DATE  -->
-<!-- 		FROM MEMBER  -->
-<!-- 		ORDER BY MNO DESC -->
-<!-- 	</select> -->
-	
 	<!-- 페이징처리를 추가한 목록 조회 (ORDER BY MNO ASC 번호 오름차순) -->
 	<select id="memberSelectList" resultMap="memberResultMap">
-		SELECT MEMBER.RNUM, MNO, EMAIL, MNAME, CRE_DATE
-		FROM (
-				SELECT ROWNUM RNUM, M.MNO, M.EMAIL, M.MNAME, M.CRE_DATE
-				FROM (
-				  		SELECT MNO, EMAIL, MNAME, CRE_DATE
-						FROM MEMBER 
-						ORDER BY MNO DESC) M
-		) MEMBER 
-		WHERE MEMBER.RNUM BETWEEN #{start} AND #{end}
+		SELECT PM.MNO, PM.MNAME, PM.EMAIL, PM.CRE_DATE
+		   FROM (
+		        SELECT ROWNUM RNUM, M.MNO, M.MNAME, M.EMAIL, M.CRE_DATE
+		        FROM (
+		                SELECT MNO, MNAME, EMAIL, CRE_DATE
+		                FROM MEMBER
+			            <include refid="search"></include>					                          			                
+		                ORDER BY CRE_DATE DESC) M
+		      ) PM
+		WHERE PM.RNUM BETWEEN #{start} AND #{end}
 	</select>
 
 	
@@ -42,10 +51,15 @@
 	</select>	
 	
 	<!-- 회원 추가 -->
-	<insert id="memberInsertOne" parameterType="memberDto">
+	<insert id="memberInsertOne" parameterType="com.edu.member.model.MemberDto"
+	useGeneratedKeys="true" keyProperty="no">
+		
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			select MEMBER_MNO_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
 		INSERT INTO MEMBER
 		VALUE(MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE)
-		VALUES(MEMBER_MNO_SEQ.NEXTVAL, #{email}, #{password}, #{name}, SYSDATE, SYSDATE)
+		VALUES(#{no}, #{email}, #{password}, #{name}, SYSDATE, SYSDATE)
 	</insert>
 	
 	<!-- 파일 추가  insertFile 10.17 회원추가에 파일(사진) 추가기능 -->
@@ -71,6 +85,7 @@
 		<set>
 			<if test="email != ''">EMAIL = #{email},</if>
 			<if test="name != ''">MNAME = #{name},</if>
+			<if test="password != ''">PWD = #{password},</if>
 			MOD_DATE = SYSDATE
 		</set>
 		WHERE MNO = #{no}
@@ -87,8 +102,27 @@
 	<!-- 회원의 전체수를 반환 (멤버 조회시 같이 총카운트수를 센다)-->
 	<select id="memberSelectTotalCount" resultType="java.lang.Integer">
 		SELECT COUNT(*)
-		FROM MEMBER		
-	</select>	
-
+		FROM MEMBER	
+		<include refid="search"></include>
+	</select>
+	
+	<select id="fileSelectList" parameterType="int" resultType="map">
+		SELECT IDX, ORIGINAL_FILE_NAME, STORED_FILE_NAME,
+		ROUND(FILE_SIZE/1024, 1) AS FILE_SIZE
+		FROM TB_FILE
+		WHERE PARENT_SEQ = #{no}
+	</select>
+	
+	<select id="fileSelectStoredFileName" parameterType="int"
+		resultType="map">
+		SELECT IDX, STORED_FILE_NAME
+		FROM TB_FILE 
+		WHERE PARENT_SEQ = #{parentSeq}
+	</select>
+	
+	<delete id="fileDelete" parameterType="int">
+		DELETE FROM TB_FILE
+		WHERE PARENT_SEQ = #{parentSeq}
+	</delete>
 
 </mapper>

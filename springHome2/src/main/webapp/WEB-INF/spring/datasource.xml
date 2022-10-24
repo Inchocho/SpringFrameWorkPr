@@ -31,7 +31,16 @@
 
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg index="0" ref="sqlSessionFactory"/>
-		<constructor-arg index="1" value="SIMPLE"/>
+<!-- BATCH타입으로 수행되게 될경우 더이상 단건 조회 처리결과값을 리턴으로 받아서 쓸 수 없다(10.19 6시 17분)-->		
+		<constructor-arg index="1" value="BATCH"/>
+<!-- SIMPLE타입으로 수행되게 될경우 더이상 단건 조회 결과로 받아쓸수있는데 이게 무의미함 좀 안씀 BATCH 검색해봐 -->				
+<!-- 		<constructor-arg index="1" value="SIMPLE"/> -->
+	</bean>
+	
+	<!-- 트랜잭션 매니저를 POJO(PLAIN OLD JAVA OBJECT)로 생성 -->
+	<bean id="transactionManager"
+	class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 
 </beans>

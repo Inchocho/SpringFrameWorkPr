@@ -22,14 +22,17 @@ public class MemberDaoImpl implements MemberDao{
 	String namespace = "com.edu.member.";
 	
 	@Override
-	public List<MemberDto> memberSelectList(int start, int end) {
+	public List<MemberDto> memberSelectList(String searchOption, String keyword, int start, int end) {
 		
 		//시작페이지와 끝페이지를 HashMap에 담아서 넘겨줌
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("searchOption", searchOption);
+		map.put("keyword", keyword);
 		map.put("start", start);
 		map.put("end", end);
+
+		return sqlSession.selectList(namespace + "memberSelectList", map);	
 		
-		return sqlSession.selectList(namespace + "memberSelectList", map);
 	}
 
 	@Override
@@ -68,10 +71,15 @@ public class MemberDaoImpl implements MemberDao{
 	}
 
 	@Override
-	public int memberSelectTotalCount() {
+	public int memberSelectTotalCount(String searchOption, String keyword) {
 		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("searchOption", searchOption);
+		map.put("keyword", keyword);
+		
 		return (int)sqlSession.selectOne(
-				namespace + "memberSelectTotalCount");
+				namespace + "memberSelectTotalCount", map);		
 	}
 
 	@Override
@@ -81,5 +89,24 @@ public class MemberDaoImpl implements MemberDao{
 		sqlSession.insert(namespace + "insertFile", map);
 	}
 
+	@Override
+	public List<Map<String, Object>> fileSelectList(int no) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList(namespace + "fileSelectList", no);
+	}
+
+	@Override
+	public Map<String, Object> fileSelectStoredFileName(int parentSeq) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne(namespace + "fileSelectStoredFileName"
+			, parentSeq);
+	}
+
+	@Override
+	public int fileDelete(int parentSeq) {
+		// TODO Auto-generated method stub
+		return sqlSession.delete(namespace + "fileDelete", parentSeq);
+	}
+	
 	
 }

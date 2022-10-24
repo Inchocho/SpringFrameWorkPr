@@ -7,6 +7,11 @@
 	
 	SPMS(Simple Project Management System)
 	
+	<c:if test="${member.email eq '관리자'}">
+		안녕~~~
+		<input type="button" value="관리자버튼">
+	</c:if>
+	
 	<c:if test="${member.email ne null}">
 		<span style="float: right;">
 			${member.name}
@@ -25,6 +30,18 @@
 			</a>
 		</span>
 	</c:if>
+	
+	
+	<span style="float: right;">		
+		<a style="color:white;" 
+			href="<%=request.getContextPath()%>">
+			시작화면 &nbsp&nbsp&nbsp
+		</a>
+		<a style="color:white;" 
+			href="<%=request.getContextPath()%>/member/list.do">
+			유저목록 &nbsp&nbsp&nbsp
+		</a>		
+	</span>	 	
 
 </div>
 	

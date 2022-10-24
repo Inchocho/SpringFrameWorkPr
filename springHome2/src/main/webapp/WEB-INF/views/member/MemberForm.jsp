@@ -52,7 +52,7 @@
 		이름: <input type='text' name='name' id='name'><br>
 		이메일: <input type='text' name='email' id='email'><br>
 		암호: <input type='password' name='password' id='password'><br>
-		파일: <input type="file" name='file'>
+		파일: <input type="file" name='file'><br>
 		<input type='submit' value='추가' id='submitBtn'>
 		<input type='button' value='뒤로가기' onclick='pageMoveListFnc();'>
 	</form>	

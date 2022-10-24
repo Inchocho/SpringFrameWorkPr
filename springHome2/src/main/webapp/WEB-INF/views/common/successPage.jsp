@@ -9,7 +9,7 @@
 <script type="text/javascript">
 	alert('성공적으로 처리했습니다');
 	
-	location.href = '/springHome2/member/list.do';
+	location.href = '/springHome2/member/list.do?curPage=${curPage}&searchOption=${searchOption}&keyword=${keyword}';
 </script>
 
 </head>
