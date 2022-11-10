@@ -9,7 +9,7 @@
 			<when test="searchOption == 'all'">
 				WHERE MNAME LIKE '%'||#{keyword}||'%'
 				OR EMAIL LIKE '%'||#{keyword}||'%'
-			</when>
+			</when>		
 		<!-- 검색 옵션이 전체가 아닌경우 -->
 			<otherwise>
 				WHERE ${searchOption} LIKE '%'||#{keyword}||'%'			

@@ -95,7 +95,7 @@ public class MemberController {
 		//DB에 맞게 잘 사용했으니 이젠 화면에 맞게 되돌림(10.21 6시)
 		if ("name".equals(searchOption)) {
 			searchOption = "mname";
-		};
+		}
 	
 		int totalCount = memberService.memberSelectTotalCount(searchOption, keyword);
 		logger.info("totalCount: {}", totalCount);

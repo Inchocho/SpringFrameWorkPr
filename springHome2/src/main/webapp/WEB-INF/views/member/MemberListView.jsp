@@ -11,6 +11,16 @@
 <title>회원목록</title>
 
 <style type="text/css">
+   #tableTr > th{
+   	width: 200px;
+   }
+   
+   #tableTr2 > td{
+   	width: 200px;
+   	height: 200px;
+   	text-align: center;
+   }
+
    table, tr, td, th{
       border:1px solid black; 
    }
@@ -73,41 +83,54 @@ function pageMoveDetailFnc(){
       <input id='submitBtn' type="submit" value="검색">
    </form>   
    
-   <br><br><br>
-
-   <table>
-      <tr>
-         <th>번호</th><th>이름</th><th>이메일</th><th>가입일</th><th></th>
-      </tr>
-      <c:forEach var="memberDto" items="${memberList}">
-      <tr>
-         <td>${memberDto.no}</td>
-         <td>
-         	<form id='memberDetailForm' action="./one.do" method="get">
-				<a href='#' onclick="pageMoveDetailFnc();">
-					${memberDto.name}
-				</a>
-			<input type="hidden" name="no" value="${memberDto.no}">
-			<input type="hidden" id="memberDetailCurPage" name="curPage"
-         		value="">
-	  		<input type="hidden" name="keyword"
-         		value="${searchMap.keyword}">
-	  		<input type="hidden" name="searchOption"
-         		value="${searchMap.searchOption}">                     				
-			</form>
-         </td>
-         <td>${memberDto.email}</td>
-         <td>
-            <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" 
-             value="${memberDto.createDate}"/>   
-         </td>
-         <td>
-            <a href='./deleteCtr.do?no=${memberDto.no}'>[삭제]</a>   
-         </td>
-      </tr>
-      </c:forEach>
-   </table>
-   
+   <c:choose>
+	 <c:when test="${empty memberList}">
+		<table>
+	      <tr id = 'tableTr'>
+	         <th>번호</th><th>이름</th><th>이메일</th><th>가입일</th><th></th>
+	      </tr>
+	      <tr id = "tableTr2">
+	         <td colspan="5">
+	         	회원이 존재하지 않습니다
+	         </td>
+	      </tr>      
+	    </table> 		
+     </c:when>
+	  <c:otherwise>
+	   <table>
+	      <tr>
+	         <th>번호</th><th>이름</th><th>이메일</th><th>가입일</th><th></th>
+	      </tr>
+	      <c:forEach var="memberDto" items="${memberList}">
+	      <tr>
+	         <td>${memberDto.no}</td>
+	         <td>
+	         	<form id='memberDetailForm' action="./one.do" method="get">
+					<a href='#' onclick="pageMoveDetailFnc();">
+						${memberDto.name}
+					</a>
+				<input type="hidden" name="no" value="${memberDto.no}">
+				<input type="hidden" id="memberDetailCurPage" name="curPage"
+	         		value="">
+		  		<input type="hidden" name="keyword"
+	         		value="${searchMap.keyword}">
+		  		<input type="hidden" name="searchOption"
+	         		value="${searchMap.searchOption}">                     				
+				</form>
+	         </td>
+	         <td>${memberDto.email}</td>
+	         <td>
+	            <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" 
+	             value="${memberDto.createDate}"/>   
+	         </td>
+	         <td>
+	            <a href='./deleteCtr.do?no=${memberDto.no}'>[삭제]</a>   
+	         </td>
+	      </tr>
+	      </c:forEach>
+	   </table> 
+	  </c:otherwise>
+  </c:choose>
    <!-- jsp:include는 forward처럼 데이터를 유지시킨다 -->
    <jsp:include page="/WEB-INF/views/common/Paging.jsp"/>
    

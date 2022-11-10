@@ -7,10 +7,10 @@ public class Paging implements Serializable{
 	// 페이지 == 화면
 
 	// 페이지당 게시물 수 (페이지(화면) 1개에 게시물 PAGE_SCALE 개가 나옴)
-	public static final int PAGE_SCALE = 5;
+	public static final int PAGE_SCALE = 10;
 	
 	// 화면당 블럭 수 (한 화면에 블럭이 3개까지 나옴) 
-	public static final int BLOCK_SCALE = 3;
+	public static final int BLOCK_SCALE = 10;
 	
 	// 현재 페이지 위치
 	private int curPage;

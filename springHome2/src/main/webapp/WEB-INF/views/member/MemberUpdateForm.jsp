@@ -54,6 +54,8 @@
 		
 		obj.html(htmlStr);
 		
+	}
+		
 		$("a[id ^= 'delete']").on('click', function(e) {	// 삭제 버튼
 			e.preventDefault();
 			deleteFileFnc($(this));
